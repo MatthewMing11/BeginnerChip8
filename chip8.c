@@ -24,7 +24,7 @@ void chip8::emulateCycle()
       pc = opcode & 0x0FFF;
       break;
     case 2:
-      sp++;//check if incrementing stack pointer is correct
+      sp+=2;//check if incrementing stack pointer is correct
       pc = opcode & 0x0FFF;
       break;
     case 3:

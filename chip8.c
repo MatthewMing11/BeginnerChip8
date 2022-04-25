@@ -27,7 +27,7 @@ void chip8::emulateCycle()
   opcode = memory[pc] << 8 | memory[pc + 1];
   // Decode Opcode
   char ch = opcode >>12;
-  switch(ch){
+  switch(ch){//might later change from using first letter switch to opcode switch 
     case 0:
       for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
       break;

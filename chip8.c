@@ -142,8 +142,47 @@ void chip8::emulateCycle()
     case 13:
       break;
     case 14:
+    unsigned char loctet=opcode & 0xFF;
+    if(loctet==0x9E){
+      
       break;
+    }
+    if(loctet==0XA1){
+
+      break;
+    }
+      break;//unnecessary break but standard for all cases in outer switch
     case 15:
+    unsigned char loctet=opcode & 0xFF;
+    switch(loctet){
+      case 0x07:
+        V[(opcode & 0x0F00) >> 8]=delay_timer;
+        break;
+      case 0x0A:
+      //don't really understand key presses yet
+        break;
+      case 0x15:
+        delay_timer=V[(opcode & 0x0F00) >> 8];
+        break;
+      case 0x18:
+        sound_timer=V[(opcode & 0x0F00) >> 8];
+        break;
+      case 0x1E:
+        I+=V[(opcode & 0x0F00) >> 8];
+        break;
+      case 0x29:
+      //don't really understand display and sprites yet
+        break; 
+      case 0x33:
+      //unclear about what bcd is doing
+        break;
+      case 0x55:
+      //not sure about this one
+        break; 
+      case 0x65:
+      //not sure about this one either
+        break;
+    }
       break;
   }
   // Execute Opcode

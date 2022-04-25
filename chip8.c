@@ -2,12 +2,23 @@
 
 void chip8::initialize()
 {
+  pc     = 0x200;  // Program counter starts at 0x200
+  opcode = 0;      // Reset current opcode
+  sp     = 0;      // Reset stack pointer
+ 
      // Initialize registers and memory once
-    for (int i = 0; i < 4096; i++) memory[i] =0; 
-    for (int i = 0; i < 16; i++) V[i] =0; 
-    I=0;
+    for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
+    for (int i = 0; i < 4096; i++) memory[i] =0; // Clear memory
+    for (int i = 0; i < 16; i++) V[i] =0; // Clear registers V0-VF
+    I=0;// Reset index register
+    // Load fontset
+    for(int i = 0; i < 80; ++i){
+      memory[i] = chip8_fontset[i];
+    }	
+    // Reset timers
     delay_timer=0;
     sound_timer=0;
+
 }
  
 void chip8::emulateCycle()
@@ -18,7 +29,7 @@ void chip8::emulateCycle()
   char ch = opcode >>12;
   switch(ch){
     case 0:
-      clear();//clears the display, whatever that means
+      for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
       break;
     case 1:
       pc = opcode & 0x0FFF;
@@ -126,6 +137,7 @@ void chip8::emulateCycle()
       pc=(opcode & 0x0FFF)+V[0];
       break;
     case 12:
+      V[(opcode & 0x0F00) >> 8]=((rand() % 256) & (opcode & 0x00FF))
       break;
     case 13:
       break;

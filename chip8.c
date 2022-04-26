@@ -1,5 +1,6 @@
 #include "chip8.h"
-
+//contemplating if i shold switch to opcodes to make everything uniform
+//probably?
 void chip8::initialize()
 {
   pc     = 0x200;  // Program counter starts at 0x200
@@ -173,14 +174,22 @@ void chip8::emulateCycle()
       case 0x29:
       //don't really understand display and sprites yet
         break; 
-      case 0x33:
-      //unclear about what bcd is doing
+      case 0x33://apparantly c  doesnt have binary literals, so just using bitwise ops
+      //wait this is so easy
+        bcd =V[(opcode & 0x0F00) >> 8];
+        memory[I]=bcd/100;
+        memory[I+1]=(bcd%100)/10;
+        memory[I+2]=bcd%10;
         break;
-      case 0x55:
-      //not sure about this one
+      case 0x55://not too sure about this implementation
+        for(int i=0;i<16;i++){
+          memory[I+i]=V[i];
+        }
         break; 
-      case 0x65:
-      //not sure about this one either
+      case 0x65://not sure about this one either
+        for(int i=0;i<16;i++){
+          V[i]=memory[I+i];
+        }
         break;
     }
       break;

@@ -1,4 +1,5 @@
 #include "chip8.h"
+#include <math.h>
 //contemplating if i shold switch to opcodes to make everything uniform
 //probably?
 void chip8::initialize()
@@ -30,7 +31,15 @@ void chip8::emulateCycle()
   char ch = opcode >>12;
   switch(ch){//might later change from using first letter switch to opcode switch 
     case 0:
-      for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
+      unsigned char loctet=opcode & 0xFF;
+      switch(loctet){
+        case 0xE0:
+          for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
+          break;
+        case 0xEE:
+          pc=sp;
+          pc--;
+      }
       break;
     case 1:
       pc = opcode & 0x0FFF;
@@ -140,16 +149,62 @@ void chip8::emulateCycle()
     case 12:
       V[(opcode & 0x0F00) >> 8]=((rand() % 256) & (opcode & 0x00FF))
       break;
-    case 13:
+    case 13://CHECK THIS
+    //not too sure about display stuff
+      char n= opcode & 0x000F;
+      int X=V[(opcode & 0x0F00) >> 8]%63;
+      int Y=V[(opcode & 0x00F0) >> 4]%31;
+      char place =7;//location of bit
+      int start =Y*64+X;
+      int i=0;
+      int col = 0;
+      int old=0;
+      while(i<n){
+        if(place>-1 && 0<X+(7-place) && X+(7-place)<64 && 0 < Y+i && Y+i < 32){
+          old=gfx[start+(7-place)+64*i];
+          gfx[start+(7-place)+64*i]=(memory[I+i]/(1<<place))%2;
+          if(gfx[start+(7-place)+64*i]<old){
+            col=1;
+          }
+          place--;
+        }
+        else{
+          i++;
+          place=7;
+        }
+      }
+      V[15]=col;
       break;
-    case 14:
+    case 14://not sure if check means wait, will see later
     unsigned char loctet=opcode & 0xFF;
+    //got help from https://www.libsdl.org/release/SDL-1.2.15/docs/html/guideinputkeyboard.html
+    SDL_Event event;
     if(loctet==0x9E){
-      
+      //checking key in down position
+      while(!keypress){ 
+          if(SDL_PollEvent(&event)){
+            if(event.type == SDL_KEYDOWN){
+              if(V[(opcode & 0x0F00) >> 8]==event.key.keysym.scancode){
+                pc+=2;
+                break;
+              }
+            }
+          }
+      }
       break;
     }
     if(loctet==0XA1){
-
+      //checking key in up position
+      while(!keypress){ 
+          if(SDL_PollEvent(&event)){
+            if(event.type == SDL_KEYUP){
+              if(V[(opcode & 0x0F00) >> 8]==event.key.keysym.scancode){
+                pc+=2;
+                break;
+              }
+            }
+          }
+      }
       break;
     }
       break;//unnecessary break but standard for all cases in outer switch
@@ -159,8 +214,22 @@ void chip8::emulateCycle()
       case 0x07:
         V[(opcode & 0x0F00) >> 8]=delay_timer;
         break;
-      case 0x0A:
-      //don't really understand key presses yet
+      case 0x0A:// got help from https://stackoverflow.com/questions/4468028/sdl-delay-until-keyboard-input
+        int keypress=0;
+        int key;
+        SDL_Event event;
+        while(!keypress){
+          if(SDL_WaitEvent(&event)){
+            if(event.type == SDL_KEYDOWN){
+              if (key >3 && key <10 && key >29 && key <40){//check if key is valid within current system
+                keypress = true;
+                key=event.key.keysym.scancode;
+                break;
+              }
+            }
+          }
+        }
+        V[(opcode & 0x0F00) >> 8]=key;
         break;
       case 0x15:
         delay_timer=V[(opcode & 0x0F00) >> 8];
@@ -173,6 +242,7 @@ void chip8::emulateCycle()
         break;
       case 0x29:
       //don't really understand display and sprites yet
+        I=V[(opcode & 0x0F00) >> 8];
         break; 
       case 0x33://apparantly c  doesnt have binary literals, so just using bitwise ops
       //wait this is so easy

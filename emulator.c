@@ -1,7 +1,8 @@
-//#include 
-//#include   // OpenGL graphics and input
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_timer.h>
 #include "chip8.c" // Your cpu core implementation
-
+// need to use linkers to get gcc to work
 chip8 myChip8;
  //game loop
 

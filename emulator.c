@@ -27,7 +27,8 @@ int main(int argc, char **argv)
       drawGraphics();
  
     // Store key press state (Press and Release)
-    myChip8.setKeys();	
+    //myChip8.setKeys();	
+    //states are already maintained in sdl2
   }
  
   return 0;

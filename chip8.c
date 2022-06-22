@@ -1,4 +1,5 @@
 #include "chip8.h"
+#include <stdio.h>
 #include <math.h>
 //contemplating if i shold switch to opcodes to make everything uniform
 //probably?
@@ -22,7 +23,17 @@ void chip8::initialize()
     sound_timer=0;
 
 }
- 
+
+void chip8::loadGame(char *filename){
+  File *buffer=fopen(filename,"rb");
+  struct stat st;
+  stat(filename, &st);
+  size=st.st_size;
+  for(int i=0;i<size;i++){
+    memory[i+0x200]=buffer[i];
+  }
+}
+
 void chip8::emulateCycle()
 {
   // Fetch Opcode
@@ -267,4 +278,10 @@ void chip8::emulateCycle()
   // Execute Opcode
  
   // Update timers
+  if(delay_timer>0){
+    delay_timer--;
+  }
+  if(sound_timer>0){
+    sound_timer--;
+  }
 }

@@ -15,17 +15,14 @@ void setupGraphics(SDL_Window **window, SDL_Renderer **renderer){
   SDL_RenderClear(*renderer);
 }
 void drawGraphics(SDL_Window **window,SDL_Renderer **renderer){
-  printf("%s\n","I AM HERE");
   for(int row=0;row<32;row++){
     for(int col=0;col<64;col++){
-      printf("%d\n",row*32+col);
-      printf("This value is %d\n",myChip8.gfx[row*64+col]);
+      printf("This value is %d,%d\n",col,row);
       if(myChip8.gfx[row*64+col]){
         SDL_SetRenderDrawColor(*renderer,255,255,255,255);
         SDL_RenderDrawPoint(*renderer,col,row);  
       }else{
         SDL_SetRenderDrawColor(*renderer,0,0,0,255);
-        printf("%s\n","I have drawn point");
         SDL_RenderDrawPoint(*renderer,col,row);
       }
     }
@@ -52,13 +49,18 @@ int main(int argc, char **argv)
   // Initialize the Chip8 system and load the game into the memory  
   myChip8.initialize();
   char * file="test_opcode.ch8";
-  printf("%s\n","Hello, Hi");
   myChip8.loadGame(file);
-  printf("%s\n","Hello, Hi");
- 
+ char* print;
   // Emulation loop
   while(1)
   {
+    // for(int i=0;i<32;i++){
+    //   for(int j=0;j<64;j++){
+    //     printf("%d",myChip8.gfx[j+i*64]);
+    //   }
+    //   printf("\n");
+    // }
+    // printf("\n");
     // Emulate one cycle
     myChip8.emulateCycle();
  

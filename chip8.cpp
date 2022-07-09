@@ -36,6 +36,7 @@ void chip8::initialize()
     for (int i = 0; i < 64*32; i++) gfx[i] =0; // Clear display
     for (int i = 0; i < 4096; i++) memory[i] =0; // Clear memory
     for (int i = 0; i < 16; i++) V[i] =0; // Clear registers V0-VF
+    for (int i = 0; i < 16; i++) stack[i] =0; // Clear stack
     I=0;// Reset index register
     // Load fontset
     for(int i = 0; i < 80; ++i){
@@ -90,8 +91,9 @@ void chip8::emulateCycle()
           drawFlag=1;
           break;
         case 0xEE:
-          pc=sp;
-          pc--;
+          pc=stack[sp];
+          sp--;
+          break;
       }
       break;
     }
@@ -99,7 +101,8 @@ void chip8::emulateCycle()
       pc = opcode & 0x0FFF;
       break;
     case 2:
-      sp+=2;//check if incrementing stack pointer is correct
+      sp+=1;
+      stack[sp]=pc;
       pc = opcode & 0x0FFF;
       break;
     case 3:
@@ -208,19 +211,19 @@ void chip8::emulateCycle()
     //not too sure about display stuff
     {
       char n= opcode & 0x000F;
-      int X=V[(opcode & 0x0F00) >> 8]%63;
-      int Y=V[(opcode & 0x00F0) >> 4]%31;
+      int X=V[(opcode & 0x0F00) >> 8]%64;
+      int Y=V[(opcode & 0x00F0) >> 4]%32;
       char place =7;//location of bit
       int start =Y*64+X;
       int i=0;
       int col = 0;
       int old=0;
       while(i<n){
-        if(place>-1 && 0<X+(7-place) && X+(7-place)<64 && 0 < Y+i && Y+i < 32){
+        if(place>-1 && X+(7-place)<64 && Y+i < 32){
           old=gfx[start+(7-place)+64*i];
           gfx[start+(7-place)+64*i]=(memory[I+i]/(1<<place))%2;
-          printf("%d\n",start+(7-place)+64*i);
-          printf("%d\n",gfx[start+(7-place)+64*i]);
+          // printf("%d\n",start+(7-place)+64*i);
+          // printf("%d\n",gfx[start+(7-place)+64*i]);
           if(gfx[start+(7-place)+64*i]<old){
             col=1;
           }

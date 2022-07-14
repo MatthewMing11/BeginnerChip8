@@ -17,7 +17,6 @@ void setupGraphics(SDL_Window **window, SDL_Renderer **renderer){
 void drawGraphics(SDL_Window **window,SDL_Renderer **renderer){
   for(int row=0;row<32;row++){
     for(int col=0;col<64;col++){
-      printf("This value is %d,%d\n",col,row);
       if(myChip8.gfx[row*64+col]){
         SDL_SetRenderDrawColor(*renderer,255,255,255,255);
         SDL_RenderDrawPoint(*renderer,col,row);  

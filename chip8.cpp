@@ -79,7 +79,11 @@ void chip8::emulateCycle()
   // Fetch Opcode
   opcode = memory[pc] << 8 | memory[pc + 1];
   pc+=2;
-  // printf("%d\n",opcode);
+  printf("%x\n",opcode);
+  for(int i=0;i<16;i++){ 
+    printf("V[%d]=%d\n",i,V[i]);
+  }
+  printf("\n");
   // Decode Opcode
   char ch = opcode >>12;
   switch(ch){//might later change from using first letter switch to opcode switch 
@@ -101,8 +105,7 @@ void chip8::emulateCycle()
       pc = opcode & 0x0FFF;
       break;
     case 2:
-      sp+=1;
-      stack[sp]=pc;
+      stack[++sp]=pc;
       pc = opcode & 0x0FFF;
       break;
     case 3:
@@ -180,7 +183,7 @@ void chip8::emulateCycle()
           V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0)>>4]-V[(opcode & 0x0F00) >> 8];
           break;
         case 14:
-          if(V[(opcode & 0x0F00) >> 8]>>7){
+          if((V[(opcode & 0x0F00) >> 8]>>7)%2){//don't know if there are values over 255 but just to make sure
             V[15]=1;
           }
           else{
@@ -216,7 +219,7 @@ void chip8::emulateCycle()
       char place =7;//location of bit
       int start =Y*64+X;
       int i=0;
-      int col = 0;
+      int col = 0;//collision variable
       int old=0;
       while(i<n){
         if(place>-1 && X+(7-place)<64 && Y+i < 32){
@@ -234,7 +237,6 @@ void chip8::emulateCycle()
           place=7;
         }
       }
-      printf("%s\n","HERE I AM");
       V[15]=col;
       drawFlag=1;
       break;
@@ -273,7 +275,7 @@ void chip8::emulateCycle()
       }
       break;
     }
-      break;//unnecessary break but standard for all cases in outer switch
+    break;//unnecessary break but standard for all cases in outer switch
     }
     case 15:
     {
@@ -314,8 +316,7 @@ void chip8::emulateCycle()
       //don't really understand display and sprites yet
         I=V[(opcode & 0x0F00) >> 8];
         break; 
-      case 0x33://apparantly c  doesnt have binary literals, so just using bitwise ops
-      //wait this is so easy
+      case 0x33:
       {
         int bcd =V[(opcode & 0x0F00) >> 8];
         memory[I]=bcd/100;
@@ -323,16 +324,22 @@ void chip8::emulateCycle()
         memory[I+2]=bcd%10;
         break;
       }
-      case 0x55://not too sure about this implementation
-        for(int i=0;i<16;i++){
+      case 0x55:
+      {
+        int max=((opcode & 0x0F00) >> 8)+1;
+        for(int i=0;i<max;i++){
           memory[I+i]=V[i];
         }
         break; 
-      case 0x65://not sure about this one either
-        for(int i=0;i<16;i++){
+      }
+      case 0x65:
+      {
+        int max=((opcode & 0x0F00) >> 8)+1;
+        for(int i=0;i<max;i++){
           V[i]=memory[I+i];
         }
         break;
+      }
     }
       break;
     }

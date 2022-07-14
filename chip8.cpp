@@ -79,11 +79,11 @@ void chip8::emulateCycle()
   // Fetch Opcode
   opcode = memory[pc] << 8 | memory[pc + 1];
   pc+=2;
-  printf("%x\n",opcode);
-  for(int i=0;i<16;i++){ 
-    printf("V[%d]=%d\n",i,V[i]);
-  }
-  printf("\n");
+  // printf("%x\n",opcode);
+  // for(int i=0;i<16;i++){ 
+  //   printf("V[%d]=%d\n",i,V[i]);
+  // }
+  // printf("\n");
   // Decode Opcode
   char ch = opcode >>12;
   switch(ch){//might later change from using first letter switch to opcode switch 

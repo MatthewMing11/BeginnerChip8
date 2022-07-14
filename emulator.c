@@ -65,9 +65,9 @@ int main(int argc, char **argv)
  
     // If the draw flag is set, update the screen
     if(myChip8.drawFlag){
-      printf("%s\n","Inside the draw");
+      // printf("%s\n","Inside the draw");
       drawGraphics(&window,&renderer);
-      printf("%s\n","Outside the draw");
+      // printf("%s\n","Outside the draw");
     }
     // Store key press state (Press and Release)
     //myChip8.setKeys();	

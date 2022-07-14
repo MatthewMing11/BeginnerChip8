@@ -10,7 +10,7 @@ chip8 myChip8;
 void setupGraphics(SDL_Window **window, SDL_Renderer **renderer){
   SDL_Init(SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(640,320,0,window,renderer);
-  SDL_RenderSetScale(*renderer,4,4);
+  SDL_RenderSetScale(*renderer,8,8);
   SDL_SetRenderDrawColor(*renderer,0,0,0,255);
   SDL_RenderClear(*renderer);
 }
